@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 
 	"time"
@@ -46,9 +44,8 @@ func main() {
 	for !rl.WindowShouldClose() {
 		if !game.game_over {
 			snake.main(game, constdelay)
-			fruit.main(game, snake)
+			fruit.handleMovement(game, &snake)
 			drawMain(snake, fruit, game)
-			fmt.Println(snake.Pos)
 
 			game.outOfBounds(snake)
 			if game.game_over {

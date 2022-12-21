@@ -82,6 +82,7 @@ func (s *Snake) Move(game Game) {
 	} else if s.dir == "RIGHT" {
 		s.Pos[0].x++
 	}
+	fmt.Println(s.Pos)
 }
 
 func (s *Snake) head() pos {
