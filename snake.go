@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -19,36 +18,37 @@ type Snake struct {
 	Pos    []pos
 }
 
-func (s *Snake) main(game Game, delay *time.Ticker) {
+func (s *Snake) main(game *Game, delay *time.Ticker) {
 	s.Input()
 
 	<-delay.C
 
 	s.Move(game)
+  s.collision(game)
+  s.outOfBounds(game)
 }
 
 func (s *Snake) Input() {
-	if rl.IsKeyPressed(rl.KeyUp) && s.dir != "DOWN" {
+  var moved bool = false
+
+	if rl.IsKeyPressed(rl.KeyUp) && s.dir != "DOWN" && !moved{
 		s.dir = "UP"
-	}
-	if rl.IsKeyPressed(rl.KeyDown) && s.dir != "UP" {
+    moved = true
+  } else if rl.IsKeyPressed(rl.KeyDown) && s.dir != "UP" && !moved{
 		s.dir = "DOWN"
-	}
-	if rl.IsKeyPressed(rl.KeyRight) && s.dir != "LEFT" {
+    moved = true
+	} else if rl.IsKeyPressed(rl.KeyRight) && s.dir != "LEFT" && !moved {
 		s.dir = "RIGHT"
-	}
-	if rl.IsKeyPressed(rl.KeyLeft) && s.dir != "RIGHT" {
+    moved = true
+	} else if rl.IsKeyPressed(rl.KeyLeft) && s.dir != "RIGHT" && !moved{
 		s.dir = "LEFT"
+    moved = true
 	}
 }
 
 func (s *Snake) addSegment() {
 
-	fmt.Println("addSegment Called")
-
 	lastPos := s.Pos[len(s.Pos)-1]
-
-	fmt.Println("Last Position:", lastPos)
 
 	if s.dir == "UP" {
 		s.Pos = append(s.Pos, pos{lastPos.x, lastPos.y + 1})
@@ -64,11 +64,10 @@ func (s *Snake) addSegment() {
 	}
 	if s.dir == "RIGHT" {
 		s.Pos = append(s.Pos, pos{lastPos.x - 1, lastPos.y})
-		fmt.Println(s.Pos)
 	}
 }
 
-func (s *Snake) Move(game Game) {
+func (s *Snake) Move(game *Game) {
 	for i := len(s.Pos) - 1; i > 0; i-- {
 		s.Pos[i] = s.Pos[i-1]
 	}
@@ -78,13 +77,33 @@ func (s *Snake) Move(game Game) {
 	} else if s.dir == "DOWN" {
 		s.Pos[0].y++
 	} else if s.dir == "LEFT" {
-		s.Pos[0].x--
+    s.Pos[0].x--
 	} else if s.dir == "RIGHT" {
 		s.Pos[0].x++
 	}
-	fmt.Println(s.Pos)
 }
 
 func (s *Snake) head() pos {
 	return s.Pos[0]
 }
+
+func (s *Snake) collision(game *Game) {
+  var touch bool
+
+  for i := 1; i  < len(s.Pos); i ++ {
+    if s.Pos[i].x == s.head().x && s.Pos[i].y == s.head().y {
+      touch = true
+    }
+  }
+
+  if touch {
+    game.gameOver()
+  }
+}
+
+func (s *Snake) outOfBounds(game *Game) {
+  if s.head().x < 0 || s.head().x > 11 || s.head().y < 0 || s.head().y > 11 {
+    game.gameOver()
+  }
+}
+

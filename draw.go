@@ -1,6 +1,10 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+  rl "github.com/gen2brain/raylib-go/raylib"
+
+  str "strconv"
+)
 
 func drawMain(snake Snake, fruit Fruit, game Game) {
 	rl.BeginDrawing()
@@ -25,9 +29,10 @@ func drawMain(snake Snake, fruit Fruit, game Game) {
 	for i := 0; i < int(game.tile_height); i++ {
 		rl.DrawLine(int32(i)*game.tile_width, 0, int32(i)*game.tile_width, 12*game.tile_width, rl.Gray)
 	}
-
+  
+  score_str := str.Itoa(game.score)
 	//Score
-	rl.DrawText("Score: ", 10, 10, 40, rl.Black)
+	rl.DrawText("Score: " + score_str, 10, 10, 40, rl.Black)
 
 	rl.EndDrawing()
 }
@@ -36,7 +41,7 @@ func drawTitle(game Game) {
 	rl.BeginDrawing()
 	rl.ClearBackground(rl.LightGray)
 
-	rl.DrawText("Press Space To Start", 3*game.tile_width, game.window_height/2, 25, rl.Gray)
-
+	rl.DrawText("Press Space To Start", 3*game.tile_width + 10, game.window_height/2, 25, rl.Gray)
+  rl.DrawText("Previous score: " + str.Itoa(game.prev_score), 3 * game.tile_width + 40, game.window_height/2-40, 25, rl.Gray)
 	rl.EndDrawing()
 }
